@@ -10,20 +10,11 @@
 </head>
 
 <body>
-    <!-- 브랜드 입력하면 해당 브랜드의 카메라 table이 뜨도록 -->
 
 
 
     <div style="border: 1px solid gray; float: left; width: 100%;">
         <h3>카메라 조회</h3><br>
-        <!-- <select id="cameras_main" style="width: 20%;" onchange="cam_search();">
-            <option value="brand">브랜드</option>
-            <option value="model">제품명</option>
-            <option value="price">금액</option>
-            <option value="category">종류</option>
-            <option value="shutter">셔터속도</option>
-            <option value="level">단계</option>
-        </select> -->
         <div>
             BRAND
             <select id="c_brand">
@@ -39,14 +30,6 @@
                 <option value="YASHICA">YASHICA</option>
             </select>
         </div>
-        <!-- <input type="text" id="c_model" style="display: none;">
-
-            <select id="c_price" style="display:none;">
-                <option value="">10~20</option>
-                <option value="">20~30</option>
-                <option value="">30~40</option>
-                <option value="">40~</option>
-            </select> -->
             <div>
                 CATEGORY
                 <select id="c_category">
@@ -82,8 +65,8 @@
                     // alert(document.getElementById("c_brand").value + " 카메라 목록 불러오기!");
                     data = JSON.parse(data)
                     tab = `<table border="1">
-                        <tr><th>Brand</th><th>Model</th><th>Price</th><th>Option</th><th>Shutter</th><th>Level</th></tr>`;
-                    let brand, model, price, option, shutter, level;
+                        <tr><th>Brand</th><th>Model</th><th>Price</th><th>Option</th><th>Shutter</th><th>Level</th><th>Image</th></tr>`;
+                    let brand, model, price, option, shutter, level, pic;
                     for (i in data) {
                         brand = data[i].brand;
                         model = data[i].model;
@@ -91,10 +74,9 @@
                         category = data[i].category;
                         shutter = data[i].shutter;
                         level = data[i].level;
-                        // pic = brand + "_" + model + ".jpg"
-                        // <td><img src="../templates/images/${pic}</td>
+                        pic = data[i].brand + "_" + data[i].model + ".jpg" 
                         tab = tab + `<tr><td>${brand}</td><td>${model}</td><td>${price}</td><td>${category}</td>
-                            <td>${shutter}</td><td>${level}</td></tr>`;
+                            <td>${shutter}</td><td>${level}</td><td><img src="../templates/images/${pic}</td></tr>`;
                     }
                     tab = tab + `</table>`;
                     document.getElementById("cam1").innerHTML = tab;
@@ -107,33 +89,6 @@
                 + "&test_level=" + document.getElementById("c_level").value);
         };
     </script>
-
-    <div style="border: 1px solid grey; float: left; width: 33%;">
-        <h3>카메라 추가</h3>
-        Brand : <input type="text" id="add_brand"><br><br>
-        Model : <input type="text" id="add_model"><br><br>
-        Price : <input type="text" id="add_price"><br><br>
-        Format : <input type="text" id="add_format"><br><br>
-        <button onclick="addCams()">ADD</button><br><br>
-    </div>
-
-    <div style="border: 1px solid grey; float: left; width: 33%;">
-        <h3>카메라 삭제</h3>
-        Brand : <input type="text" id="del_brand"><br><br>
-        Model : <input type="text" id="del_model"><br><br>
-        <button onclick="delCams()">DELETE</button><br><br>
-    </div>
-
-    <div style="border: 1px; float: left; width: 50%;">
-        <button onclick="showall()">모든 카메라 보기</button>
-        <div id="cam2"></div><br>
-    </div>
-
-    <div style="border: 1px; float: right; width: 40%;">
-        <button onclick="fresh()">새로고침</button>
-    </div>
-
-
 
     <script>
         function getCams() {
@@ -163,79 +118,6 @@
             xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhttp.send("brand=" + document.getElementById("c_brand").value);
         };
-
-
-
-        function fresh() {
-            location.reload();
-        }
-
-        function showall() {
-            const xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    alert("모든 카메라 목록 불러오기");
-                    data = this.responseText;
-                    data = JSON.parse(data)
-                    tab = `<table border="1">
-                        <tr><th>Brand</th><th>Model</th><th>Price</th><th>Format</th></tr>`;
-                    let brand, model, price, format;
-                    for (i in data) {
-                        brand = data[i].brand;
-                        model = data[i].model;
-                        price = data[i].price;
-                        format = data[i].format;
-                        tab = tab + `<tr><td>${brand}</td><td>${model}</td><td>${price}</td><td>${format}</td></tr>`;
-                    }
-                    tab = tab + `</table>`;
-                    document.getElementById("cam2").innerHTML = tab;
-                }
-            };
-            xhttp.open("GET", "showall");
-            xhttp.send();
-        };
-
-
-        function delCams() {
-            const xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    data = this.responseText;
-                    alert(document.getElementById("del_brand").value + " " +
-                        document.getElementById("del_model").value + " 카메라가 삭제되었습니다.")
-                }
-            };
-            xhttp.open("POST", "delCams");
-            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
-            a = document.getElementById("del_brand").value[0].toUpperCase()
-            b = document.getElementById("del_brand").value.substr(1, document.getElementById("del_brand").value.length).toLowerCase()
-
-            queryString = "brand=" + a + b + "&model=" + document.getElementById("del_model").value;
-            xhttp.send(queryString);
-        };
-
-        function addCams() {
-            const xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    data = this.responseText;
-                    alert(document.getElementById("add_brand").value + " 카메라가 목록에 추가되었습니다.")
-                }
-            };
-            xhttp.open("POST", "addCams");
-            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
-            a = document.getElementById("add_brand").value[0].toUpperCase()
-            b = document.getElementById("add_brand").value.substr(1, document.getElementById("add_brand").value.length).toLowerCase()
-
-            queryString = "brand=" + a + b
-                + "&model=" + document.getElementById("add_model").value
-                + "&price=" + document.getElementById("add_price").value
-                + "&format=" + document.getElementById("add_format").value;
-            xhttp.send(queryString);
-        };
-
 
     </script>
 
